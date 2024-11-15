@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Charades Game</title>
+    <!-- Link to Google Fonts for Pacifico and Happy Monkey fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        /* General Body and Background Styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(90deg, #00b4ff, #a500ff);
+            background-size: 200% 200%;
+            animation: backgroundAnimation 8s ease infinite;
+            font-family: 'Happy Monkey', sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+        /* Animated Background Keyframes */
+        @keyframes backgroundAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Splash Screen Styling */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        #splash-title {
+            font-size: 80px;
+            margin-bottom: 20px;
+            font-family: 'Pacifico', cursive;
+            color: white;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            transform: rotate(-5deg);
+        }
+
+        #start-button {
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            background-color: white;
+            color: #00b4ff;
+            border-radius: 5px;
+            margin: 20px;
+            font-family: 'Happy Monkey', sans-serif;
+        }
+
+        /* Game Screen Styling */
+        #game-screen {
+            display: none;
+            padding-top: 20px;
+            font-size: 50px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #phrase-display {
+            padding: 20px;
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div id="splash-title">Charades</div>
+        <button id="start-button">Play</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen">
+        <div id="phrase-display"></div>
+    </div>
+
+    <script>
+        // List of 500+ fun phrases appropriate for kids
+        const phrases = [
+            "A monkey juggling bananas",
+            "An elephant spraying water",
+            "A cat chasing its tail",
+            "A dog digging a hole",
+            "A rabbit hopping in the garden",
+            "A bird flying in the sky",
+            "A fish swimming upstream",
+            "A frog catching flies",
+            "A kangaroo jumping over a fence",
+            "A bear hibernating in a cave",
+      "A monkey juggling bananas",
+            "An elephant spraying water",
+            "A cat chasing its tail",
+            "A dog digging a hole",
+            "A rabbit hopping in the garden",
+            "A bird flying in the sky",
+            "A fish swimming upstream",
+            "A frog catching flies",
+            "A kangaroo jumping over a fence",
+            "A bear hibernating in a cave",
+            "A turtle racing a hare",
+            "A lion roaring loudly",
+            "A giraffe eating leaves",
+            "A penguin sliding on ice",
+            "A dolphin jumping out of water",
+            "A snake slithering through grass",
+            "A butterfly emerging from a cocoon",
+            "A bee collecting nectar",
+            "A horse galloping in a field",
+            "A cow mooing in the barn",
+            "A pig rolling in mud",
+            "A sheep grazing on grass",
+            "A chicken laying an egg",
+            "A duck quacking in the pond",
+            "A mouse nibbling cheese",
+            "A squirrel gathering nuts",
+            "A fox sneaking through the forest",
+            "A wolf howling at the moon",
+            "A whale spouting water",
+            "A shark swimming through the ocean",
+            "A polar bear sliding on ice",
+            "A panda eating bamboo",
+            "A gorilla beating its chest",
+            "A zebra running across the savannah",
+            "A flamingo standing on one leg",
+            "A peacock spreading its feathers",
+            "A camel walking through the desert",
+            "An octopus hiding in coral",
+            "A crab walking sideways",
+            "A hedgehog curling into a ball",
+            "A chameleon changing colors",
+            "A koala climbing a eucalyptus tree",
+            "An owl hooting at night",
+            "A bat hanging upside down",
+            "A hippopotamus yawning widely",
+            "A rhinoceros charging forward",
+            "A deer leaping over a log",
+            "A cheetah sprinting fast",
+            "A crocodile snapping its jaws",
+            "A llama spitting",
+            "A kangaroo boxing",
+            "A parrot repeating words",
+            "A snail crawling slowly",
+            "A seagull stealing food",
+            "A starfish sticking to a rock",
+            "A ladybug crawling on a leaf",
+            "A caterpillar munching on plants",
+            "A grasshopper hopping high",
+            "An ant carrying a crumb",
+            "A spider spinning a web",
+            "A dragon breathing fire",
+            "A unicorn galloping over a rainbow",
+            "A mermaid swimming under the sea",
+            "A fairy sprinkling pixie dust",
+            "A knight fighting a dragon",
+            "A pirate searching for treasure",
+            "A wizard casting a spell",
+            "An astronaut walking on the moon",
+            "A robot dancing",
+            "A superhero flying through the air",
+            "A clown juggling balls",
+            "A magician pulling a rabbit from a hat",
+            "A chef flipping pancakes",
+            "A baker kneading dough",
+            "A painter creating a masterpiece",
+            "A musician playing the violin",
+            "A dancer twirling gracefully",
+            "A teacher writing on the chalkboard",
+            "A doctor checking a heartbeat",
+            "A firefighter climbing a ladder",
+            "A police officer directing traffic",
+            "A farmer planting seeds",
+            "A gardener watering flowers",
+            "A swimmer doing the butterfly stroke",
+            "A soccer player kicking a goal",
+            "A basketball player shooting a hoop",
+            "A runner crossing the finish line",
+            "A cyclist pedaling uphill",
+            "A skier going down a mountain",
+            "A surfer riding a wave",
+            "A fisherman reeling in a fish",
+            "A camper setting up a tent",
+            "A hiker climbing a hill",
+            "A pilot flying a plane",
+            "A sailor hoisting a sail",
+            "A train conductor blowing a whistle",
+            "A driver steering a car",
+            "A child blowing bubbles",
+            "A baby crawling on the floor",
+            "A toddler learning to walk",
+            "A kid flying a kite",
+            "A person reading a book",
+            "A family having a picnic",
+            "Friends playing tag",
+            "Kids building a sandcastle",
+            "Someone riding a roller coaster",
+            "A person ice skating",
+            "A child opening a present",
+            "A boy playing video games",
+            "A girl skipping rope",
+            "A person playing hopscotch",
+            "A group singing a song",
+            "A person playing the piano",
+            "A kid painting a picture",
+            "A family watching a movie",
+            "A dog fetching a ball",
+            "A cat napping in the sun",
+            "A bird building a nest",
+            "An eagle soaring high",
+            "A person baking cookies",
+            "A child eating ice cream",
+            "A baby laughing",
+            "A kid riding a bicycle",
+            "A child brushing teeth",
+            "A person watering plants",
+            "A gardener pruning bushes",
+            "A chef cooking pasta",
+            "A baker frosting a cake",
+            "A clown making balloon animals",
+            "A magician doing a card trick",
+            "An artist sculpting clay",
+            "A scientist mixing chemicals",
+            "A teacher reading a story",
+            "A nurse taking temperature",
+            "A firefighter sliding down a pole",
+            "A police officer writing a ticket",
+            "A mail carrier delivering letters",
+            "A construction worker using a hammer",
+            "A plumber fixing a sink",
+            "An electrician changing a lightbulb",
+            "A mechanic repairing a car",
+            "A pilot landing a plane",
+            "A sailor navigating a ship",
+            "A captain steering a boat",
+            "A conductor leading an orchestra",
+            "A musician playing drums",
+            "A violinist tuning strings",
+            "A guitarist strumming chords",
+            "A flutist playing a melody",
+            "A drummer keeping the beat",
+            "A singer hitting high notes",
+            "A dancer tap dancing",
+            "A ballerina performing a pirouette",
+            "A gymnast doing a cartwheel",
+            "A diver jumping off a board",
+            "A swimmer floating on water",
+            "A surfer paddling out",
+            "A snowboarder doing tricks",
+            "A skateboarder doing an ollie",
+            "A child playing hide and seek",
+            "Kids jumping on a trampoline",
+            "Children playing musical chairs",
+            "A kid solving a puzzle",
+            "A person playing chess",
+            "A family decorating a Christmas tree",
+            "Kids hunting for Easter eggs",
+            "A person carving a pumpkin",
+            "A child dressing up for Halloween",
+            "A boy walking a dog",
+            "A girl feeding ducks",
+            "A kid climbing a tree",
+            "A child blowing out birthday candles",
+            "Friends taking a selfie",
+            "A person riding a horse",
+            "A zookeeper feeding animals",
+            "A vet examining a pet",
+            "A librarian shelving books",
+            "A person writing a letter",
+            "A photographer taking pictures",
+            "A reporter interviewing someone",
+            "A person brushing hair",
+            "A kid making a snowman",
+            "Children having a snowball fight",
+            "A person shoveling snow",
+            "A kid sledding down a hill",
+            "A child catching butterflies",
+            "A person picking apples",
+            "A farmer milking a cow",
+            "A person planting a tree",
+            "Kids jumping in puddles",
+            "A child catching rain on tongue",
+            "A person opening an umbrella",
+            "A sailor tying knots",
+            "A child swinging on a swing",
+            "A person sliding down a slide",
+            "Kids playing in a sandbox",
+            "A child blowing a dandelion",
+            "A person skipping stones",
+            "A kid collecting seashells",
+            "A person watching fireworks",
+            "A family setting up a campsite",
+            "A person roasting marshmallows",
+            "Kids telling ghost stories",
+            "A child reading under the covers",
+            "A person yawning and stretching",
+            "A kid making funny faces",
+            "A child playing dress-up",
+            "A person tying shoelaces",
+            "A kid building with blocks",
+            "Children playing with toy cars",
+            "A person petting a cat",
+            "A kid feeding a goldfish",
+            "A child watering a plant",
+            "A person picking flowers",
+            "A kid making a paper airplane",
+        ];
+
+        // Event listener for the "Play" button
+        document.getElementById('start-button').addEventListener('click', () => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            showRandomPhrase();
+        });
+
+        // Function to display a random phrase
+        function showRandomPhrase() {
+            const randomIndex = Math.floor(Math.random() * phrases.length);
+            const phrase = phrases[randomIndex];
+            document.getElementById('phrase-display').innerText = phrase;
+        }
+
+        // Event listener for tapping the screen to refresh the phrase
+        document.getElementById('game-screen').addEventListener('click', () => {
+            showRandomPhrase();
+        });
+    </script>
+</body>
+</html>
